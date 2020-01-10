@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Management;
 
 namespace RegistryEdit
@@ -19,7 +15,10 @@ namespace RegistryEdit
             string command = args[4];
 
             ManagementScope ms = new ManagementScope("\\\\" + target + "\\root\\default");
-            ms.Options = co;
+            if (!args[0].Equals(""))
+            {
+                ms.Options = co;
+            }
 
             ManagementClass mc = new ManagementClass(ms, new ManagementPath("StdRegProv"), null);
 
