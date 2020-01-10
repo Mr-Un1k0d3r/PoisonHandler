@@ -34,6 +34,7 @@ namespace RegistryEdit
 
             mbo["sSubKeyName"] = "Software\\Classes\\" + handler + "\\shell\\open\\command";
             mbo["sValue"] = command;
+            mbo["sValueName"] = null;
             mc.InvokeMethod("CreateKey", mbo, null);
             mc.InvokeMethod("SetStringValue", mbo, null);
         }
