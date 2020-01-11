@@ -2,7 +2,7 @@ $CSharp = 'using System;using System.Management;namespace RegistryEdit {public c
 
 Add-Type -ReferencedAssemblies "System.Management.dll" -TypeDefinition $CSharp -Language CSharp;
 
-function Remote-RegisterProtocolHandler {	
+function Execute-PoisonHandler {	
 	param(
 		[Parameter(Mandatory=$True)]
 		[string]$Payload,
