@@ -32,28 +32,10 @@ function Execute-PoisonHandler {
 		if($Creds) {
 			Write-Output "[*] Remotely authenticated as $($Username)"
 			$process = Invoke-WmiMethod -ComputerName $ComputerName -Class Win32_Process -Name Create -ArgumentList $Command -Impersonation 3 -EnableAllPrivileges -Credential $Creds
-			Try {
-				Write-Output "[+] Remote Process PID: $($process.ProcessId)"
-				Register-WmiEvent -ComputerName $ComputerName -Query "Select * from Win32_ProcessStopTrace Where ProcessID=$($process.ProcessId)" -Credential $Creds -Action {
-					$state = $event.SourceEventArgs.NewEvent;
-					Write-Output "[+] Remote process status:`nPID: $($state.ProcessId)`nState: $($state.State)`nStatus: $($state.Status)" 
-				}
-			} Catch {
-				$_
-				Write-Output "[-] Process Status couldn't be retrieved"
-			}
+			Write-Output "[+] Remote Process PID: $($process.ProcessId)"
 		} else {
 			$process = Invoke-WmiMethod -ComputerName $ComputerName -Class Win32_Process -Name Create -ArgumentList $Command
-			Try {
-				Write-Output "[+] Remote Process PID: $($process.ProcessId)"
-				Register-WmiEvent -ComputerName $ComputerName -Query "Select * from Win32_ProcessStopTrace Where ProcessID=$($process.ProcessId)" -Action {
-					$state = $event.SourceEventArgs.NewEvent;
-					Write-Output "[+] Remote process status:`nPID: $($state.ProcessId)`nState: $($state.State)`nStatus: $($state.Status)" 
-				}
-			} Catch {
-				$_
-				Write-Output "[-] Process Status couldn't be retrieved"
-			}
+			Write-Output "[+] Remote Process PID: $($process.ProcessId)"
 		}
 	}
 	
