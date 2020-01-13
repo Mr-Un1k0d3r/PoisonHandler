@@ -25,7 +25,17 @@ module-import .\Execute-PoisonHandler.ps1; Execute-PoisonHandler -ComputerName h
 module-import .\Execute-PoisonHandler.ps1; Execute-PoisonHandler -ComputerName host -Payload "command to run" -Handler ms-handler-name 
 module-import .\Execute-PoisonHandler.ps1; Execute-PoisonHandler -ComputerName host -Payload "command to run" -Username MrUn1k0d3r -Password Password
 module-import .\Execute-PoisonHandler.ps1; Execute-PoisonHandler -ComputerName host -Payload "command to run" -Username MrUn1k0d3r -Password Password -UseRunDLL32 True
+module-import .\Execute-PoisonHandler.ps1; Execute-PoisonHandler -ComputerName host -Payload "command to run" -Username MrUn1k0d3r -Password Password -RemoteCommand "custom command to run the handler"
 ```
+
+The `-RemoteCommand` switch can be used to specify the remote command used. the handler name will be appended at the end automatically.
+
+# Command that can be used
+
+* rundll32 url.dll,FileProtocolHandler
+* rundll32 url.dll,OpenURL
+* explorer
+* start
 
 # To do 
 * add more way to execute the protocol handler
