@@ -17,7 +17,8 @@ function Execute-PoisonHandler {
 		[Parameter(Mandatory=$False)]
 		[bool]$UseRunDLL32 = $False,
 		[Parameter(Mandatory=$False)]
-		[string]$RemoteCommand = "cmd.exe /c start $($Handler)://"
+		[string]$RemoteCommand = "cmd.exe /c start"
+
 	)
 	
 	BEGIN {
@@ -27,6 +28,7 @@ function Execute-PoisonHandler {
 			$Creds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $SecurePassword
 		}
 		
+		$RemoteCommand = $RemoteCommand + " $($Handler)://"
 		if($UseRunDLL32) {
 			$RemoteCommand = "rundll32 url.dll,FileProtocolHandler $($Handler)://"
 		}
